@@ -23,8 +23,8 @@ handouts:
   - data/bk_00.prj
   - data/README.md
 tag: v0.1
-lesson: 1
-instructor: Elizabeth Green
+lesson: 2
+instructor: 
 lifecycle: beta # status for lifecycle badge
 badgecolor: blue # color for lifecycle badge
 warning: true # whether to include note about lifecycle status
