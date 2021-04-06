@@ -180,7 +180,7 @@ lead_tracts <- lead %>%
 
 ===
 
-To visualize the average lead concentration from soil samples within each cencus tract, merge the data frame to the `sf` object on "TRACT".
+To visualize the average lead concentration from soil samples within each census tract, merge the data frame to the `sf` object on "TRACT".
 
 
 
