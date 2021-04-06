@@ -24,7 +24,7 @@ lead[['geometry']] <- st_sfc(
 
 ===
 
-The `lead` table now has the "simple feature column", which `st_sfc` creates from a CRS and a geometry type, but each point is "EMPTY". The empty gemometry is equivalent to a NA value.
+The `lead` table now has the "simple feature column", which `st_sfc` creates from a CRS and a geometry type, but each point is "EMPTY". The empty geometry is equivalent to a NA value.
 {:.notes}
 
 
@@ -190,7 +190,7 @@ First 10 features:
 
 ===
 
-Now that table is an `sf` object, the data are easilly displayed as a map.
+Now that table is an `sf` object, the data are easily displayed as a map.
 
 
 
@@ -427,7 +427,7 @@ census_blockgroups <- inner_join(
 
 ===
 
-The census data is now easily vizualized as a map.
+The census data is now easily visualized as a map.
 
 
 

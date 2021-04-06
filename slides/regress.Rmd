@@ -33,12 +33,12 @@ plot(census_lead_tracts['lm.resid'])
 
 ===
 
-Polygons close to eachother tend to have similar residuals: there is
+Polygons close to each other tend to have similar residuals: there is
 autocorrelation. It is tempting to ask for a semivariogram plot of the
 residuals, but that requires a precise definition of the distance between
 polygons. A favored alternative for quantifying autoregression in non-point
 feature collections is Moran's I. This analog to Pearson's correlation
-coeficient quantifies autocorrelation rather than cross-correlation.
+coefficient quantifies autocorrelation rather than cross-correlation.
 {:.notes}
 
 Moran's I is the correlation between all pairs of features, weighted to

@@ -37,7 +37,7 @@ lead_xy <- read.csv('data/SYR_soil_PB.csv')
 ===
 
 The empirical semivariogram shown below is a windowed average of the squared
-difference in lead concentrations beween sample points.
+difference in lead concentrations between sample points.
 
 
 
@@ -179,7 +179,7 @@ ggplot(census_lead_tracts,
 
 ===
 
-The effect of paying attention to autocorrelation is subtle, but it is noticable and had the expected effect in tract 5800. The pred_ppm value is a little higher than the average.
+The effect of paying attention to autocorrelation is subtle, but it is noticeable and had the expected effect in tract 5800. The pred_ppm value is a little higher than the average.
 
 
 
