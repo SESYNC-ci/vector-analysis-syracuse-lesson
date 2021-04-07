@@ -73,7 +73,7 @@ The steps to perform kriging with the [gstat](){:.rlib} library are:
 
 Generate a low resolution (for demonstration) grid of points overlaying the
 bounding box for the lead data and trim it down to the polygons of interest.
-Remember, that goal is aggregating lead concentrations within each census tract.
+Remember, the goal is aggregating lead concentrations within each census tract.
 
 ```{r, handout = 0}
 pred_ppm <- st_make_grid(
@@ -130,7 +130,7 @@ pred_ppm <- krige(
 ===
 
 And the same commands that joined lead concentrations to census tracts apply to
-joining the predicted concentrations in too.
+joining the predicted concentrations too.
 
 ```{r, handout = 0, message = FALSE}
 pred_ppm_tracts <-

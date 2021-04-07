@@ -13,14 +13,14 @@ model requires making good assumptions about relationships in your data:
 ===
 
 The following model assumes an association (in the linear least-squares sense),
-between the hispanic population and lead concentrations and assumes independence
+between the Hispanic population and lead concentrations and assumes independence
 of every census tract (i.e. row).
 
 
 
 ~~~r
 ppm.lm <- lm(pred_ppm ~ perc_hispa,
-  census_lead_tracts)
+  data = census_lead_tracts)
 ~~~
 {:title="{{ site.data.lesson.handouts[0] }}" .text-document}
 
@@ -42,7 +42,8 @@ plot(census_lead_tracts['lm.resid'])
 
 ===
 
-Polygons close to each other tend to have similar residuals: there is
+We can see that areas with negative and positive residuals are not randomly distributed.
+They tend to cluster together in space: there is
 autocorrelation. It is tempting to ask for a semivariogram plot of the
 residuals, but that requires a precise definition of the distance between
 polygons. A favored alternative for quantifying autoregression in non-point
@@ -68,6 +69,14 @@ tracts_nb <- poly2nb(tracts)
 {:title="{{ site.data.lesson.handouts[0] }}" .text-document}
 
 
+The function `poly2nb()` from [spdep](){:.rlib} generates a neighbor list from
+a set of polygons. This object is a list of each polygon's neighbors that share
+a border with it (in matrix form, this would be called an adjacency matrix).
+Unfortunately, [spdep](){:.rlib} was created before [sf](){:.rlib}, so the two 
+packages aren't compatible. That's why we first need to convert the geometry of `census_tracts` 
+to an [sp](){:.rlib} object using `as(st_geometry(...), 'Spatial')`.
+{:.notes}
+
 ===
 
 The `neighbors` variable is the network of features sharing a boundary point.
@@ -84,9 +93,14 @@ plot.nb(tracts_nb, coordinates(tracts),
 ![ ]({% include asset.html path="images/regress/unnamed-chunk-4-1.png" %})
 {:.captioned}
 
+`plot.nb()` plots a network graph, given a `nb` object and a matrix of coordinates as 
+arguments. We extract a coordinate matrix from the `Spatial` object `tracts` using
+`coordinates()`.
+{:.notes}
+
 ===
 
-Reshape the adjacency matrix into a list of neighbors with associated weights.
+Add weights to the neighbor links.
 
 
 
@@ -95,6 +109,10 @@ tracts_weight <- nb2listw(tracts_nb)
 ~~~
 {:title="{{ site.data.lesson.handouts[0] }}" .text-document}
 
+
+By default, `nb2listw()` weights each neighbor of a polygon equally, although other
+weighting options are available.
+{:.notes}
 
 ===
 
@@ -117,6 +135,12 @@ moran.plot(
 ![ ]({% include asset.html path="images/regress/unnamed-chunk-6-1.png" %})
 {:.captioned}
 
+The first argument to `moran.plot` is the vector of data values (in this case the residuals),
+and the second argument is the weighted neighbor list. The `labels` argument in this
+case is the vector of tract codes. By default `moran.plot` will flag and label values
+that have high influence on the relationship.
+{:.notes}
+
 ===
 
 There are many ways to use geospatial information about tracts to impose
@@ -136,6 +160,11 @@ ppm.sarlm <- lagsarlm(
 ~~~
 {:title="{{ site.data.lesson.handouts[0] }}" .text-document}
 
+
+Here, `lagsarlm()` from [spatialreg](){:.rlib} uses the same formula as the `lm()` 
+we did above, but we also need to supply the weighted neighbor list.
+The `tol.solve` argument is needed for the numerical method the model uses.
+{:.notes}
 
 ===
 

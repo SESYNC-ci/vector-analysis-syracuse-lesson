@@ -10,25 +10,12 @@ locations are distant.
 {:.notes}
 
 The [gstat](){:.rlib} library, a geospatial analogue to the [stats](){:.rlib}
-library provides variogram estimation among several additional tools.
+library, provides variogram estimation, among several additional tools.
 
 
 
 ~~~r
 library(gstat)
-~~~
-{:title="{{ site.data.lesson.handouts[0] }}" .text-document}
-
-
-~~~
-Registered S3 method overwritten by 'xts':
-  method     from
-  as.zoo.xts zoo 
-~~~
-{:.output}
-
-
-~~~r
 lead_xy <- read.csv('data/SYR_soil_PB.csv')
 ~~~
 {:title="{{ site.data.lesson.handouts[0] }}" .text-document}
@@ -38,6 +25,8 @@ lead_xy <- read.csv('data/SYR_soil_PB.csv')
 
 The empirical semivariogram shown below is a windowed average of the squared
 difference in lead concentrations between sample points.
+As expected, the difference increases as distance between points increases and
+eventually flattens out at large distances.
 
 
 
@@ -51,6 +40,12 @@ plot(v_ppm)
 {:title="{{ site.data.lesson.handouts[0] }}" .text-document}
 ![ ]({% include asset.html path="images/smooth/unnamed-chunk-2-1.png" %})
 {:.captioned}
+
+Here we use the formula `ppm ~ 1` to specify that lead concentration `ppm` is
+the dependent variable, and we are not fitting any trend (1 means intercept only).
+We pass another formula to the `locations` argument, `locations = ~ x + y`,
+to specify the x and y coordinate of each location.
+{:.notes}
 
 ===
 
@@ -69,11 +64,20 @@ plot(v_ppm, v_ppm_fit)
 ![ ]({% include asset.html path="images/smooth/unnamed-chunk-3-1.png" %})
 {:.captioned}
 
+We use `fit.variogram()` to fit a model to our empirical variogram `v_ppm`. The type of 
+model is specified with the argument `model = vgm(...)`.
+Describing the parameters of `vgm()` used to fit the model variogram is outside the scope of this
+lesson; for more information check out [gstat documentation](https://cran.r-project.org/web/packages/gstat/index.html) 
+and the references cited there.
+{:.notes}
+
 ===
 
 ## Kriging
 
-The modeled semivariogram acts as a parameter when performing Guassian process regression, commonly known as kriging. The steps to perform Kriging with the [gstat](){:.rlib} library are:
+The modeled semivariogram acts as a parameter when performing Gaussian process regression, commonly known as kriging, to
+interpolate predicted values for locations near our observed data. 
+The steps to perform kriging with the [gstat](){:.rlib} library are:
 
 1. Generate a modeled semivariogram
 1. Generate new locations for "predicted" values
@@ -83,7 +87,7 @@ The modeled semivariogram acts as a parameter when performing Guassian process r
 
 Generate a low resolution (for demonstration) grid of points overlaying the
 bounding box for the lead data and trim it down to the polygons of interest.
-Remember, that goal is aggregating lead concentrations within each census tract.
+Remember, the goal is aggregating lead concentrations within each census tract.
 
 
 
@@ -98,9 +102,17 @@ pred_ppm <- pred_ppm[idx]
 {:title="{{ site.data.lesson.handouts[0] }}" .text-document}
 
 
+Here, `st_make_grid()` creates a grid of points `pred_ppm` at the center of 400-meter squares over the
+extent of the `lead` geometry. We can specify `cellsize = 400` because the CRS of `lead` is
+in units of meters, and `what = 'centers'` means we want the points at the center of each
+grid cell rather than polygons representing the cells. Next, we find only the points contained
+within census tract polygons using `st_intersects(census_tracts, pred_ppm)`, then `unlist()`
+to return a vector of indices `idx` for the points we want. Finally we subset `pred_ppm` by `idx`.
+{:.notes}
+
 ===
 
-Map the result to verify generated points.
+Map the result to verify that we have only points contained in our census tracts.
 
 
 
@@ -125,8 +137,10 @@ Almost done ...
 
 ===
 
-The first argument specifies the model for the means, which is constant according to our 
-formula for lead concentrations. The observed ppm values are in the `locations` data.frame along with the point geometry. The result is a data frame with predictions for lead concentrations at the points in `newdata`.
+The first argument of `krige` specifies the model for the means, which is constant according to our 
+formula for lead concentrations (again, `~ 1` means no trend). 
+The observed ppm values are in the `locations` data.frame along with the point geometry. 
+The result is a data frame with predictions for lead concentrations at the points in `newdata`.
 
 
 
@@ -143,7 +157,7 @@ pred_ppm <- krige(
 ===
 
 And the same commands that joined lead concentrations to census tracts apply to
-joining the predicted concentrations in too.
+joining the predicted concentrations too.
 
 
 
@@ -191,15 +205,14 @@ The effect of paying attention to autocorrelation is subtle, but it is noticeabl
 
 ~~~
 Simple feature collection with 1 feature and 5 fields
-geometry type:  POLYGON
-dimension:      XY
-bbox:           xmin: 405633.1 ymin: 4762867 xmax: 406445.9 ymax: 4764711
-epsg (SRID):    32618
-proj4string:    +proj=utm +zone=18 +datum=WGS84 +units=m +no_defs
+Geometry type: POLYGON
+Dimension:     XY
+Bounding box:  xmin: 405633.1 ymin: 4762867 xmax: 406445.9 ymax: 4764711
+CRS:           32618
 # A tibble: 1 x 6
-  TRACT POP2000 perc_hispa                        geometry avg_ppm pred_ppm
-  <int>   <int>      <dbl>                   <POLYGON [m]>   <dbl>    <dbl>
-1  5800    2715     0.0302 ((406445.9 4762893, 406017.5 4…    5.44     5.53
+  TRACT POP2000 perc_hispa                             geometry avg_ppm pred_ppm
+  <int>   <int>      <dbl>                        <POLYGON [m]>   <dbl>    <dbl>
+1  5800    2715     0.0302 ((406445.9 4762893, 406017.5 476286…    5.44     5.53
 ~~~
 {:.output}
 

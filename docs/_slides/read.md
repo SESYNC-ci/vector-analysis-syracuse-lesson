@@ -7,7 +7,8 @@ output:
 
 ## Simple Features
 
-A standardized set of geometric shapes are the essense of vector data, but these are next to useless outside a tabular structure.
+A standardized set of geometric shapes are the essence of vector data. 
+The [sf](){:.rlib} puts sets of shapes in a tabular structure so that we can manipulate and analyze them.
 
 
 
@@ -24,7 +25,11 @@ lead[['geometry']] <- st_sfc(
 
 ===
 
-The `lead` table now has the "simple feature column", which `st_sfc` creates from a CRS and a geometry type, but each point is "EMPTY". The empty geometry is equivalent to a NA value.
+We read in a data frame called `lead` from an external CSV file, then create a new column called `geometry`. 
+The `lead` data frame now has the "simple feature column", which `st_sfc` creates from a CRS and a geometry type 
+(in this case a point geometry, `st_point()`). For now, each point is "EMPTY". The empty geometry is 
+equivalent to a NA value. *Note*: you must call this column `geometry` so that other [sf](){:.rlib} functions
+will recognize it as the simple feature column.
 {:.notes}
 
 
@@ -52,14 +57,19 @@ The `lead` table now has the "simple feature column", which `st_sfc` creates fro
 | geometry | description |
 |----------+-------------|
 | `st_point` | a single point |
-| `st_linestring` | sequence of points connected by straight, non-self intersecting line pieces |
-| `st_polygon` | one [or more] sequences of points in a closed, non-self intersecting ring [with holes] |
+| `st_linestring` | sequence of points connected by straight, non-self-intersecting line pieces |
+| `st_polygon` | one [or more] sequences of points in a closed, non-self-intersecting ring [with holes] |
 | `st_multi*` | sequence of `*`, either `point`, `linestring`, or `polygon` |
 
 ===
 
 Each element of the simple feature column is a simple feature geometry, here
 created from the "x" and "y" elements of a given feature.
+
+Here we use the first entry in the existing `x` and `y` columns of the `lead` 
+data frame to fill in the empty `geometry` slot in the first row of the data frame.
+The `dim = 'XY'` argument specifies a two-dimensional point.
+{:.notes}
 
 
 
@@ -120,11 +130,10 @@ number of records displayed.
 
 ~~~
 Simple feature collection with 3149 features and 4 fields (with 3149 geometries empty)
-geometry type:  POINT
-dimension:      XY
-bbox:           xmin: NA ymin: NA xmax: NA ymax: NA
-epsg (SRID):    32618
-proj4string:    +proj=utm +zone=18 +datum=WGS84 +units=m +no_defs
+Geometry type: POINT
+Dimension:     XY
+Bounding box:  xmin: NA ymin: NA xmax: NA ymax: NA
+CRS:           EPSG:32618
 First 10 features:
           x       y ID      ppm                 geometry
 1  408164.3 4762321  0 3.890648 POINT (408164.3 4762321)
@@ -144,7 +153,9 @@ First 10 features:
 ===
 
 Naturally, there is a shortcut to creating an `sf` object from a data frame with
-point coordinates. The CRS must be specified via EPSG integer or proj4 string.
+point coordinates. We use `st_as_sf()` with the `coords` argument to specify
+which columns represent the x and y coordinates of each point.
+The CRS must be specified with the argument `crs` via EPSG integer or proj4 string.
 
 
 
@@ -167,11 +178,10 @@ lead <- st_as_sf(lead,
 
 ~~~
 Simple feature collection with 3149 features and 2 fields
-geometry type:  POINT
-dimension:      XY
-bbox:           xmin: 401993 ymin: 4759765 xmax: 412469 ymax: 4770955
-epsg (SRID):    32618
-proj4string:    +proj=utm +zone=18 +datum=WGS84 +units=m +no_defs
+Geometry type: POINT
+Dimension:     XY
+Bounding box:  xmin: 401993 ymin: 4759765 xmax: 412469 ymax: 4770955
+CRS:           EPSG:32618
 First 10 features:
    ID      ppm                 geometry
 1   0 3.890648 POINT (408164.3 4762321)
@@ -190,7 +200,10 @@ First 10 features:
 
 ===
 
-Now that table is an `sf` object, the data are easily displayed as a map.
+Now that the data frame is an `sf` object, the data are easily displayed as a map.
+
+Here, the points are colored by lead concentration (`ppm`).
+{:.notes}
 
 
 
@@ -198,19 +211,14 @@ Now that table is an `sf` object, the data are easily displayed as a map.
 plot(lead['ppm'])
 ~~~
 {:title="{{ site.data.lesson.handouts[0] }}" .text-document}
-
-
-~~~
-Warning in classInt::classIntervals(na.omit(values), min(nbreaks, n.unq), :
-N is large, and some styles will run very slowly; sampling imposed
-~~~
-{:.output}
 ![ ]({% include asset.html path="images/read/unnamed-chunk-9-1.png" %})
 {:.captioned}
 
 ===
 
-For [ggplot2]({:.rlib}) figures, use `geom_sf` to draw maps. In the `aes` mapping for feature collections, the "x" and "y" variables are automatically assigned to the sticky "geometry" column, while other attributes can be assigned to visual elements like `fill` or `color`.
+For [ggplot2]({:.rlib}) figures, use `geom_sf` to draw maps. In the `aes` mapping for feature collections, 
+the "x" and "y" variables are automatically assigned to the "geometry" column, 
+while other attributes can be assigned to visual elements like `fill` or `color`.
 
 ===
 
@@ -234,7 +242,9 @@ ggplot(data = lead,
 More complicated geometries are usually not stored in CSV files, but they are
 usually still read as tabular data. We will see that the similarity of feature
 collections to non-spatial tabular data goes quite far; the usual data
-manipulations done on tabular data work just as well on `sf` objects.
+manipulations done on tabular data work just as well on `sf` objects. 
+Here, we read the boundaries of the [Census block groups](https://www.census.gov/programs-surveys/geography/about/glossary.html#par_textimage_4)
+in the city of Syracuse from a shapefile.
 {:.notes}
 
 
@@ -247,7 +257,7 @@ blockgroups <- read_sf('data/bg_00')
 
 ===
 
-Confirm that the coordinates in the geometry column are the correct UTMs.
+The `geometry` column contains projected UTM coordinates of the polygon vertices.
 
 
 
@@ -259,24 +269,23 @@ Confirm that the coordinates in the geometry column are the correct UTMs.
 
 ~~~
 Simple feature collection with 147 features and 3 fields
-geometry type:  POLYGON
-dimension:      XY
-bbox:           xmin: 401938.3 ymin: 4759734 xmax: 412486.4 ymax: 4771049
-epsg (SRID):    32618
-proj4string:    +proj=utm +zone=18 +datum=WGS84 +units=m +no_defs
+Geometry type: POLYGON
+Dimension:     XY
+Bounding box:  xmin: 401938.3 ymin: 4759734 xmax: 412486.4 ymax: 4771049
+CRS:           32618
 # A tibble: 147 x 4
-   BKG_KEY   Shape_Leng Shape_Area                                 geometry
-   <chr>          <dbl>      <dbl>                            <POLYGON [m]>
- 1 36067000…     13520.   6135184. ((403476.4 4767682, 403356.7 4767804, 4…
- 2 36067000…      2547.    301840. ((406271.7 4770188, 406186.1 4770270, 4…
- 3 36067000…      2678.    250998. ((406730.3 4770235, 406687.8 4770205, 4…
- 4 36067000…      3392.    656276. ((406436.1 4770029, 406340 4769973, 406…
- 5 36067000…      2224.    301086. ((407469 4770033, 407363.9 4770035, 407…
- 6 36067000…      3263.    606495. ((408398.6 4769564, 408283.1 4769556, 4…
- 7 36067000…      2878.    274532. ((407477.4 4769773, 407401 4769767, 407…
- 8 36067000…      3606.    331035. ((407486 4769507, 407443.5 4769504, 407…
- 9 36067001…      2951.    376786. ((410704.4 4769103, 410625.2 4769100, 4…
-10 36067001…      2868.    265836. ((409318.3 4769203, 409299.6 4769535, 4…
+   BKG_KEY   Shape_Leng Shape_Area                                      geometry
+   <chr>          <dbl>      <dbl>                                 <POLYGON [m]>
+ 1 36067000…     13520.   6135184. ((403476.4 4767682, 403356.7 4767804, 403117…
+ 2 36067000…      2547.    301840. ((406271.7 4770188, 406186.1 4770270, 406107…
+ 3 36067000…      2678.    250998. ((406730.3 4770235, 406687.8 4770205, 406650…
+ 4 36067000…      3392.    656276. ((406436.1 4770029, 406340 4769973, 406307.2…
+ 5 36067000…      2224.    301086. ((407469 4770033, 407363.9 4770035, 407233.4…
+ 6 36067000…      3263.    606495. ((408398.6 4769564, 408283.1 4769556, 408181…
+ 7 36067000…      2878.    274532. ((407477.4 4769773, 407401 4769767, 407320.2…
+ 8 36067000…      3606.    331035. ((407486 4769507, 407443.5 4769504, 407405.6…
+ 9 36067001…      2951.    376786. ((410704.4 4769103, 410625.2 4769100, 410542…
+10 36067001…      2868.    265836. ((409318.3 4769203, 409299.6 4769535, 409231…
 # … with 137 more rows
 ~~~
 {:.output}
@@ -284,7 +293,7 @@ proj4string:    +proj=utm +zone=18 +datum=WGS84 +units=m +no_defs
 
 ===
 
-Also note the table dimensions reveal 147 features in the collection.
+Also note the table dimensions show that there are 147 features in the collection.
 
 
 
@@ -323,7 +332,8 @@ Simple feature collections are data frames.
 The `blockgroups` object is a `data.frame`, but it also has the class attribute
 of `sf`. This additional class extends the `data.frame` class in ways useful for
 feature collection. For instance, the geometry column becomes "sticky" in most
-table operations, like subsetting.
+table operations, like subsetting. This means that the geometry column is retained
+even if it is not explicitly named.
 {:.notes}
 
 
@@ -336,19 +346,18 @@ table operations, like subsetting.
 
 ~~~
 Simple feature collection with 5 features and 1 field
-geometry type:  POLYGON
-dimension:      XY
-bbox:           xmin: 402304.2 ymin: 4767421 xmax: 407469 ymax: 4771049
-epsg (SRID):    32618
-proj4string:    +proj=utm +zone=18 +datum=WGS84 +units=m +no_defs
+Geometry type: POLYGON
+Dimension:     XY
+Bounding box:  xmin: 402304.2 ymin: 4767421 xmax: 407469 ymax: 4771049
+CRS:           32618
 # A tibble: 5 x 2
-  BKG_KEY                                                          geometry
-  <chr>                                                       <POLYGON [m]>
-1 3606700010… ((403476.4 4767682, 403356.7 4767804, 403117.2 4768027, 4028…
-2 3606700030… ((406271.7 4770188, 406186.1 4770270, 406107.9 4770345, 4060…
-3 3606700030… ((406730.3 4770235, 406687.8 4770205, 406650.9 4770179, 4066…
-4 3606700020… ((406436.1 4770029, 406340 4769973, 406307.2 4769954, 406206…
-5 3606700040… ((407469 4770033, 407363.9 4770035, 407233.4 4770036, 407235…
+  BKG_KEY                                                               geometry
+  <chr>                                                            <POLYGON [m]>
+1 3606700010… ((403476.4 4767682, 403356.7 4767804, 403117.2 4768027, 402892.7 …
+2 3606700030… ((406271.7 4770188, 406186.1 4770270, 406107.9 4770345, 406079.9 …
+3 3606700030… ((406730.3 4770235, 406687.8 4770205, 406650.9 4770179, 406601 47…
+4 3606700020… ((406436.1 4770029, 406340 4769973, 406307.2 4769954, 406206.5 47…
+5 3606700040… ((407469 4770033, 407363.9 4770035, 407233.4 4770036, 407235.1 47…
 ~~~
 {:.output}
 
@@ -356,6 +365,10 @@ proj4string:    +proj=utm +zone=18 +datum=WGS84 +units=m +no_defs
 ===
 
 ## Table Operations
+
+We can plot the polygon features using [ggplot2](){:.rlib} or do common
+data wrangling operations:
+{:.notes}
 
 - plot
 - merge or join
@@ -390,14 +403,22 @@ census <- within(census, {
 {:title="{{ site.data.lesson.handouts[0] }}" .text-document}
 
 
+Here, we read in a data frame called `census` with demographic characteristics
+of the Syracuse block groups.
 As usual, there's the difficulty that CSV files do not include metadata on data
-types, which have to be set manually.
+types, which have to be set manually. We do this here by coercing the `BKG_KEY`
+column to character format using `as.character()`.
 {:.notes}
 
 ===
 
 Merge tables on a unique identifier (our primary key is "BKG_KEY"), but let the
 "sf" object come first or its special attributes get lost.
+
+The `inner_join()` function from [dplyr](){:.rlib} joins two data frames on a
+common key specified with the `by` argument, keeping only the rows from each data 
+frame with matching keys in the other data frame and discarding the rest.
+{:.notes}
 
 
 
@@ -461,6 +482,14 @@ census_tracts <- census_blockgroups %>%
 ~~~
 {:title="{{ site.data.lesson.handouts[0] }}" .text-document}
 
+
+Here, we use the [dplyr](){:.rlib} function `group_by` to specify that we are doing an operation
+on all block groups within a [Census tract](https://www.census.gov/programs-surveys/geography/about/glossary.html#par_textimage_13).
+We can use `summarise()` to calculate as many summary statistics as we want, each one separated by a comma.
+Here `POP2000` is the sum of all block group populations in each tract and `perc_hispa` is the sum of the Hispanic 
+population divided by the total population (because now we have redefined `POP2000` to be the population total). 
+The `summarise()` operation automatically combines the block group polygons from each tract!
+{:.notes}
 
 ===
 
