@@ -21,7 +21,7 @@ In the previous section, we performed a table join using a non-spatial
 data type. More specifically, we performed an equality join: records were merged
 wherever the join variable in the "left table" equalled the variable in the
 "right table". Spatial joins operate on the "geometry" columns and require
-expanding beyond equality based matches. Several different kinds of "intersections" can be specified that denote a successful match.
+expanding beyond equality-based matches. Several different kinds of "intersections" can be specified that denote a successful match.
 {:.notes}
 
 ![]({% include asset.html path="images/TopologicSpatialRelarions2.png" %}){:width="70%"}  
@@ -53,7 +53,7 @@ st_join(lead, census_tracts)
 ===
 
 - Only the "left" geometry is preserved in the output
-- Matching defaults to `st_intersects`,but permits any predicate function
+- Matching defaults to `st_intersects`, but permits any predicate function (use `join` argument to specify)
 
 ```{r}
 st_join(lead, census_tracts,
@@ -65,9 +65,9 @@ is the wrong way around. Stick with the default.
 
 ===
 
-The population data is at the coarser scale, so the lead ought to be averaged
+The population data is at the coarser scale, so the lead concentration ought to be averaged
 within a census tract. Once each lead measurement is joined to "TRACT", the
-spatial data can by dropped.
+spatial data can be dropped using `st_drop_geometry()`.
 
 ```{r, handout = 0 }
 lead_tracts <- lead %>%
@@ -77,7 +77,7 @@ lead_tracts <- lead %>%
 
 ===
 
-Two more steps to group the data by "TRACT" and average the lead concentrations within each "TRACT".
+Two more steps are needed to `group_by()` the data by "TRACT" and `summarise()` to average the lead concentrations within each "TRACT".
 
 ```{r, handout = 0 }
 lead_tracts <- lead %>%
@@ -90,6 +90,9 @@ lead_tracts <- lead %>%
 ===
 
 To visualize the average lead concentration from soil samples within each census tract, merge the data frame to the `sf` object on "TRACT".
+
+Again, we use `inner_join` to keep all rows with matching keys between `census_tracts` and `lead_tracts`.
+{:.notes}
 
 ```{r, handout = 0, message = FALSE}
 census_lead_tracts <- census_tracts %>%
@@ -108,12 +111,12 @@ ggplot(census_lead_tracts,
     colors = heat.colors(7))
 ```
 
-A problem with this approach to aggregation is that it ignores autocorrelation. Points close to eachother tend to have similar values and shouldn't be given equal weight in averages within a polygon.
+A problem with this approach to aggregation is that it ignores autocorrelation. Points close to each other tend to have similar values and shouldn't be given equal weight in averages within a polygon.
 {:.notes}
 
 ===
 
-Take a closer look at tract 5800 (around 43.025N, 76.152W), and notice that several low values are nearly stacked on top of eachother.
+Take a closer look at tract 5800 (around 43.025N, 76.152W), and notice that several high values are nearly stacked on top of eachother.
 
 ```{r, handout = 0}
 library(mapview)

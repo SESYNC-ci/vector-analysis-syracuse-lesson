@@ -10,7 +10,7 @@ locations are distant.
 {:.notes}
 
 The [gstat](){:.rlib} library, a geospatial analogue to the [stats](){:.rlib}
-library provides variogram estimation among several additional tools.
+library, provides variogram estimation, among several additional tools.
 
 ```{r, handout = 0}
 library(gstat)
@@ -21,6 +21,8 @@ lead_xy <- read.csv('data/SYR_soil_PB.csv')
 
 The empirical semivariogram shown below is a windowed average of the squared
 difference in lead concentrations between sample points.
+As expected, the difference increases as distance between points increases and
+eventually flattens out at large distances.
 
 ```{r, handout = 0}
 v_ppm <- variogram(
@@ -29,6 +31,12 @@ v_ppm <- variogram(
   data = lead_xy)
 plot(v_ppm)
 ```
+
+Here we use the formula `ppm ~ 1` to specify that lead concentration `ppm` is
+the dependent variable, and we are not fitting any trend (1 means intercept only).
+We pass another formula to the `locations` argument, `locations = ~ x + y`,
+to specify the x and y coordinate of each location.
+{:.notes}
 
 ===
 
@@ -42,11 +50,20 @@ v_ppm_fit <- fit.variogram(
 plot(v_ppm, v_ppm_fit)
 ```
 
+We use `fit.variogram()` to fit a model to our empirical variogram `v_ppm`. The type of 
+model is specified with the argument `model = vgm(...)`.
+Describing the parameters of `vgm()` used to fit the model variogram is outside the scope of this
+lesson; for more information check out [gstat documentation](https://cran.r-project.org/web/packages/gstat/index.html) 
+and the references cited there.
+{:.notes}
+
 ===
 
 ## Kriging
 
-The modeled semivariogram acts as a parameter when performing Guassian process regression, commonly known as kriging. The steps to perform Kriging with the [gstat](){:.rlib} library are:
+The modeled semivariogram acts as a parameter when performing Gaussian process regression, commonly known as kriging, to
+interpolate predicted values for locations near our observed data. 
+The steps to perform kriging with the [gstat](){:.rlib} library are:
 
 1. Generate a modeled semivariogram
 1. Generate new locations for "predicted" values
@@ -67,9 +84,17 @@ idx <- unlist(
 pred_ppm <- pred_ppm[idx]
 ```
 
+Here, `st_make_grid()` creates a grid of points `pred_ppm` at the center of 400-meter squares over the
+extent of the `lead` geometry. We can specify `cellsize = 400` because the CRS of `lead` is
+in units of meters, and `what = 'centers'` means we want the points at the center of each
+grid cell rather than polygons representing the cells. Next, we find only the points contained
+within census tract polygons using `st_intersects(census_tracts, pred_ppm)`, then `unlist()`
+to return a vector of indices `idx` for the points we want. Finally we subset `pred_ppm` by `idx`.
+{:.notes}
+
 ===
 
-Map the result to verify generated points.
+Map the result to verify that we have only points contained in our census tracts.
 
 ```{r, handout = 0}
 ggplot(census_tracts,
@@ -89,8 +114,10 @@ Almost done ...
 
 ===
 
-The first argument specifies the model for the means, which is constant according to our 
-formula for lead concentrations. The observed ppm values are in the `locations` data.frame along with the point geometry. The result is a data frame with predictions for lead concentrations at the points in `newdata`.
+The first argument of `krige` specifies the model for the means, which is constant according to our 
+formula for lead concentrations (again, `~ 1` means no trend). 
+The observed ppm values are in the `locations` data.frame along with the point geometry. 
+The result is a data frame with predictions for lead concentrations at the points in `newdata`.
 
 ```{r, handout = 0, results = 'hide'}
 pred_ppm <- krige(
