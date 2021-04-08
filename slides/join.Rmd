@@ -116,7 +116,7 @@ A problem with this approach to aggregation is that it ignores autocorrelation. 
 
 ===
 
-Take a closer look at tract 5800 (around 43.025N, 76.152W), and notice that several high values are nearly stacked on top of each other.
+Take a closer look at tract 5800 (around 43.025N, 76.152W), and notice that several low values are nearly stacked on top of each other.
 
 ```{r, handout = 0}
 library(mapview)
