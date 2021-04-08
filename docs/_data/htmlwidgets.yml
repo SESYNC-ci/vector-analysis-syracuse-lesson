@@ -120,12 +120,14 @@
   attachment: ~
   package: ~
   all_files: yes
-- name: PopupTable
+- name: mapviewCSS
   version: 0.0.1
-  src: .na.character
+  src: htmlwidgets/lib/css
   meta: ~
   script: ~
-  stylesheet: popup.css
+  stylesheet:
+  - mapview-popup.css
+  - mapview.css
   head: ~
   attachment: ~
   package: ~
