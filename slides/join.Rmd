@@ -124,7 +124,7 @@ library(mapview)
 mapview(census_tracts,
         legend = FALSE,
         viewer.suppress = TRUE) +
-  mapview(lead['ppm'])
+  mapview(lead, zcol = 'ppm')
 ```
 
 [geometry-predicates]: https://en.wikipedia.org/wiki/DE-9IM
