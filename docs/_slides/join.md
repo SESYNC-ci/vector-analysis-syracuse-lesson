@@ -258,6 +258,41 @@ Take a closer look at tract 5800 (around 43.025N, 76.152W), and notice that seve
 ~~~r
 library(mapview)
 
+### FOR DEBUGGING - REMOVE
+lapply(sessionInfo()$otherPkgs, function(x) x$Version)
+~~~
+{:title="{{ site.data.lesson.handouts[0] }}" .text-document}
+
+
+~~~
+$mapview
+[1] "2.9.9"
+
+$dplyr
+[1] "1.0.5"
+
+$ggplot2
+[1] "3.3.3"
+
+$sf
+[1] "0.9-8"
+
+$reticulate
+[1] "1.18"
+
+$stringr
+[1] "1.4.0"
+
+$yaml
+[1] "2.2.1"
+
+$knitr
+[1] "1.31"
+~~~
+{:.output}
+
+
+~~~r
 mapview(census_tracts,
         legend = FALSE,
         viewer.suppress = TRUE) +
