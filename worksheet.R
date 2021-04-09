@@ -87,7 +87,7 @@ ggplot(...,
   geom_sf(...,
           color = 'red', fill = NA)
 
-# # PART II: SPATIAL QUERY AND AGGREGATION Join metals data to census track
+# # PART II: SPATIAL QUERY AND AGGREGATION Join metals data to census tract
 # polygons using the common key ID. Add lead data to the datasets by converting
 # the textfile of sample lead concentration into a spatial object. This is done
 # by assigning coordinates to the data frame containing x and y coordinates and

@@ -121,13 +121,13 @@ Take a closer look at tract 5800 (around 43.025N, 76.152W), and notice that seve
 ```{r, handout = 0}
 library(mapview)
 
-### FOR DEBUGGING - REMOVE
-lapply(sessionInfo()$otherPkgs, function(x) x$Version)
-
 mapview(census_tracts,
+        map.types = 'OpenStreetMap',
         legend = FALSE,
         viewer.suppress = TRUE) +
-  mapview(lead, zcol = 'ppm')
+  mapview(lead, 
+          zcol = 'ppm',
+          viewer.suppress = TRUE)
 ```
 
 [geometry-predicates]: https://en.wikipedia.org/wiki/DE-9IM
