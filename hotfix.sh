@@ -1,6 +1,7 @@
 # Another component of build: locate popuptable and leaflet providers and move them to the htmlwidgets root directory.
 
-mv docs/assets/NA/Rtmp6v8Fep/leaflet-providers_1.9.0.js docs/assets/htmlwidgets/
+providersfile=`find docs/assets/NA -type f -name "leaflet-providers_1.9.0.js"`
+mv $providersfile docs/assets/htmlwidgets/
 rm -rf docs/assets/NA
 
 mv docs/assets/htmlwidgets/lib/popup/popup.css docs/assets/htmlwidgets/
