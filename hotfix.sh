@@ -1,4 +1,12 @@
-# Another component of build: locate popuptable and leaflet providers and move them to the htmlwidgets root directory.
+# Before build: "clean" by removing a bunch of directories that will be rebuilt
+rm -rf docs/assets/htmlwidgets
+rm -rf docs/_site
+rm -rf docs/_slides
+rm -rf cache
+
+# Now build.
+
+# After build: locate popuptable and leaflet providers and move them to the htmlwidgets root directory.
 
 providersfile=`find docs/assets/NA -type f -name "leaflet-providers_1.9.0.js"`
 mv $providersfile docs/assets/htmlwidgets/
