@@ -120,13 +120,3 @@
   attachment: ~
   package: ~
   all_files: yes
-- name: PopupTable
-  version: 0.0.1
-  src: htmlwidgets
-  meta: ~
-  script: ~
-  stylesheet: popup.css
-  head: ~
-  attachment: ~
-  package: ~
-  all_files: yes

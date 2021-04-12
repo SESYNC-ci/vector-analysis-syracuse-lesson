@@ -122,9 +122,10 @@ Take a closer look at tract 5800 (around 43.025N, 76.152W), and notice that seve
 library(mapview)
 
 mapview(lead['ppm'],
-        map.types = 'OpenStreetMap',
+        popup = FALSE,
         viewer.suppress = TRUE) +
   mapview(census_tracts,
+          popup = FALSE,
           legend = FALSE)
 ```
 
