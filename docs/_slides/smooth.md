@@ -156,6 +156,23 @@ pred_ppm <- krige(
 
 ===
 
+Verify that `krige` generated predicted values for each of the grid points.
+
+
+
+~~~r
+ggplot() + 
+  geom_sf(data = census_tracts,
+          fill = NA) +
+  geom_sf(data = pred_ppm,
+          aes(color = var1.pred))
+~~~
+{:title="{{ site.data.lesson.handouts[0] }}" .text-document}
+![ ]({% include asset.html path="images/smooth/unnamed-chunk-7-1.png" %})
+{:.captioned}
+
+===
+
 And the same commands that joined lead concentrations to census tracts apply to
 joining the predicted concentrations too.
 
@@ -175,6 +192,11 @@ census_lead_tracts <-
 {:title="{{ site.data.lesson.handouts[0] }}" .text-document}
 
 
+Here, we find the predicted lead concentration value for each census tract
+by taking the means of the kriged grid point values (`var1.pred`), 
+grouped by `TRACT`.
+{:.notes}
+
 ===
 
 The predictions should be, and are, close to the original averages with
@@ -188,7 +210,7 @@ ggplot(census_lead_tracts,
   geom_point()
 ~~~
 {:title="{{ site.data.lesson.handouts[0] }}" .text-document}
-![ ]({% include asset.html path="images/smooth/unnamed-chunk-8-1.png" %})
+![ ]({% include asset.html path="images/smooth/unnamed-chunk-9-1.png" %})
 {:.captioned}
 
 ===

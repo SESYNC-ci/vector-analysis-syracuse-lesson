@@ -122,10 +122,11 @@ ggplot(...,
     colors = heat.colors(7))
 
 library(mapview)
-mapview(census_tracts,
-        legend = FALSE,
+mapview(lead['ppm'],
+        map.types = 'OpenStreetMap',
         viewer.suppress = TRUE) +
-  mapview(lead['ppm'])
+  mapview(census_tracts,
+          legend = FALSE)
 
 # # PART III :  KRIGING SURFACES Generate a gridded layer (surface) from lead
 # point measurements and aggregate lead levels at the census track levels. To
@@ -170,6 +171,12 @@ pred_ppm <- ...(
   locations = lead,
   newdata = pred_ppm,
   ...)
+
+ggplot() + 
+  geom_sf(data = ...,
+          fill = NA) +
+  geom_sf(data = ...,
+          aes(color = ...))
 
 pred_ppm_tracts <-
   pred_ppm %>%
