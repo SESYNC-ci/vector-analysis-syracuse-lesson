@@ -46,6 +46,11 @@ Moran's I is the correlation between all pairs of features, weighted to
 emphasize features that are close together. It does not dodge the problem of
 distance weighting, but provides default assumptions for how to do it.
 
+If you are interested in reading more, this [chapter](https://mgimond.github.io/Spatial/spatial-autocorrelation.html) from
+the ebook [Intro to GIS and Spatial Analysis](https://mgimond.github.io/Spatial/index.html)
+provides an accessible introduction to the Moran's I test.
+{:.notes}
+
 ```{r, handout = 0, message = FALSE}
 library(sp)
 library(spdep)
@@ -89,16 +94,25 @@ tracts_weight <- nb2listw(tracts_nb)
 ```
 
 By default, `nb2listw()` weights each neighbor of a polygon equally, although other
-weighting options are available.
+weighting options are available. For example, you could weight a pair of neighbors more
+highly if their centroids are closer together.
 {:.notes}
 
 ===
 
 Visualize correlation between the residuals and the weighted average
 of their neighbors with `moran.plot` from the
-[spdep](){:.rlib}. The positive trend line is consistent with the
+[spdep](){:.rlib} package. 
+
+The positive trend line is consistent with the
 earlier observation that features in close proximity have similar
-residuals.
+residuals. In other words, the higher the residual
+in a polygon, the higher the residual of its 
+neighboring polygons---thus the slope of the line is positive. This is
+a bad thing because a good regression model should not show any
+trend in its residuals. So we can't be confident in the results of the
+simple `lm()` that ignores spatial relationships.
+{:.notes}
 
 ```{r, handout = 0}
 moran.plot(
@@ -111,7 +125,8 @@ moran.plot(
 The first argument to `moran.plot` is the vector of data values (in this case the residuals),
 and the second argument is the weighted neighbor list. The `labels` argument in this
 case is the vector of tract codes. By default `moran.plot` will flag and label values
-that have high influence on the relationship.
+that have high influence on the relationship (the diamond-shaped points labeled with 
+census tract codes).
 {:.notes}
 
 ===
@@ -120,6 +135,17 @@ There are many ways to use geospatial information about tracts to impose
 assumptions about non-independence between observations in the regression. One
 approach is a Spatial Auto-Regressive (SAR) model, which regresses each value against
 the weighted average of neighbors.
+
+In this SAR model, we are asking how much variation in soil lead concentration across
+census tracts is explained by percent Hispanic population, just like in the simple
+linear model we fit above. But the key difference is that the SAR model incorporates
+an additional random effect that accounts for the tendency of neighboring tracts to
+have similar lead concentration values --- that is, the lead concentration
+values are spatially non-independent. For further reading, check out this
+[chapter](https://keen-swartz-3146c4.netlify.app/spatial-regression.html) of the
+ebook [Spatial Data Science](https://keen-swartz-3146c4.netlify.app/), which is 
+a great resource in general.
+{:.notes}
 
 ```{r, include = FALSE}
 set.seed(20190327)
