@@ -80,7 +80,7 @@
   all_files: no
 - name: leaflet-providers
   version: 1.9.0
-  src: htmlwidgets
+  src: htmlwidgets/lib/leaflet-providers
   meta: ~
   script: leaflet-providers_1.9.0.js
   stylesheet: ~
@@ -122,10 +122,10 @@
   all_files: yes
 - name: PopupTable
   version: 0.0.1
-  src: htmlwidgets
+  src: htmlwidgets/lib/popup
   meta: ~
   script: ~
-  stylesheet: popup.css
+  stylesheet: mapview-popup.css
   head: ~
   attachment: ~
   package: ~
