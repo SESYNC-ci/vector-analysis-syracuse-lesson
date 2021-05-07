@@ -22,7 +22,7 @@ handouts:
   - data/bk_00.dbf
   - data/bk_00.prj
   - data/README.md
-tag: v0.1
+tag: v0.2
 lesson: 3
 instructor: Quentin Read
 lifecycle: beta # status for lifecycle badge
@@ -31,6 +31,7 @@ warning: true # whether to include note about lifecycle status
 authors: 
   - Benoit Parmentier
   - Ian Carroll
+  - Quentin Read
 sorter:
   - intro
   - read
