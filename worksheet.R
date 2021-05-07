@@ -22,22 +22,10 @@
 # and ggplot commands for sf objects.
 
 ## Simple Features
-library(magrittr)
 library(sf)
 
 lead <- read.csv('data/SYR_soil_PB.csv')
-lead[['geometry']] <- st_sfc(
-  ...
-  crs = 32618)
 
-lead[[1, 'geometry']] <- ...(
-  c(...,
-    ...),
-  dim = 'XY')
-
-lead <- ...
-
-lead <- read.csv('data/SYR_soil_PB.csv')
 lead <- ...(lead,
   ...,
   crs = 32618)
@@ -51,7 +39,7 @@ ggplot(data = lead,
 
 ## Feature Collections
 
-blockgroups <- read_sf('data/bg_00')
+blockgroups <- st_read('data/bg_00')
 
 ## Table Operations
 
@@ -59,12 +47,12 @@ ggplot(blockgroups,
        aes(...)) +
    ...()
 
-census <- ...('data/SYR_census.csv')
-census <- within(census, {
-  ...
-})
-
 library(dplyr)
+
+census <- ...('data/SYR_census.csv')
+census <- mutate(census, 
+  ...
+)
 
 census_blockgroups <- ...(
   ..., census,
@@ -126,6 +114,7 @@ mapview(lead['ppm'],
         map.types = 'OpenStreetMap',
         viewer.suppress = TRUE) +
   mapview(census_tracts,
+          label = census_tracts$TRACT,
           legend = FALSE)
 
 # # PART III :  KRIGING SURFACES Generate a gridded layer (surface) from lead
@@ -157,8 +146,7 @@ plot(v_ppm, v_ppm_fit)
 pred_ppm <- ...(
   lead, cellsize = 400,
   what = 'centers')
-idx <- unlist(
-  ...(census_tracts, pred_ppm))
+
 pred_ppm <- ...
 
 ggplot(...,
@@ -212,6 +200,8 @@ plot(census_lead_tracts['lm.resid'])
 
 library(sp)
 library(spdep)
+library(spatialreg)
+
 tracts <- as(
   st_geometry(census_tracts), 'Spatial')
 tracts_nb <- ...(tracts)

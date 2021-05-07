@@ -8,7 +8,7 @@ output:
 ## Simple Features
 
 A standardized set of geometric shapes are the essence of vector data. 
-The [sf](){:.rlib} puts sets of shapes in a tabular structure so that we can manipulate and analyze them.
+The [sf](){:.rlib} package puts sets of shapes in a tabular structure so that we can manipulate and analyze them.
 
 
 
@@ -16,157 +16,39 @@ The [sf](){:.rlib} puts sets of shapes in a tabular structure so that we can man
 library(sf)
 
 lead <- read.csv('data/SYR_soil_PB.csv')
-lead[['geometry']] <- st_sfc(
-  st_point(),
-  crs = 32618)
 ~~~
 {:title="{{ site.data.lesson.handouts[0] }}" .text-document}
 
 
 ===
 
-We read in a data frame called `lead` from an external CSV file, then create a new column called `geometry`. 
-The `lead` data frame now has the "simple feature column", which `st_sfc` creates from a CRS and a geometry type 
-(in this case a point geometry, `st_point()`). For now, each point is "EMPTY". The empty geometry is 
-equivalent to a NA value. *Note*: you must call this column `geometry` so that other [sf](){:.rlib} functions
-will recognize it as the simple feature column.
-{:.notes}
-
-
-
-~~~r
-> head(lead)
-~~~
-{:title="Console" .input}
-
-
-~~~
-         x       y ID      ppm    geometry
-1 408164.3 4762321  0 3.890648 POINT EMPTY
-2 405914.9 4767394  1 4.899391 POINT EMPTY
-3 405724.0 4767706  2 4.434912 POINT EMPTY
-4 406702.8 4769201  3 5.285548 POINT EMPTY
-5 405392.3 4765598  4 5.295919 POINT EMPTY
-6 405644.1 4762037  5 4.681277 POINT EMPTY
-~~~
-{:.output}
-
-
-===
-
-| geometry | description |
-|----------+-------------|
-| `st_point` | a single point |
-| `st_linestring` | sequence of points connected by straight, non-self-intersecting line pieces |
-| `st_polygon` | one [or more] sequences of points in a closed, non-self-intersecting ring [with holes] |
-| `st_multi*` | sequence of `*`, either `point`, `linestring`, or `polygon` |
-
-===
-
-Each element of the simple feature column is a simple feature geometry, here
-created from the "x" and "y" elements of a given feature.
-
-Here we use the first entry in the existing `x` and `y` columns of the `lead` 
-data frame to fill in the empty `geometry` slot in the first row of the data frame.
-The `dim = 'XY'` argument specifies a two-dimensional point.
-{:.notes}
-
-
-
-~~~r
-lead[[1, 'geometry']] <- st_point(
-  c(x = lead[[1, 'x']],
-    y = lead[[1, 'y']]),
-  dim = 'XY')
-~~~
-{:title="{{ site.data.lesson.handouts[0] }}" .text-document}
-
-
-
-
-~~~r
-> head(lead)
-~~~
-{:title="Console" .input}
-
-
-~~~
-         x       y ID      ppm                 geometry
-1 408164.3 4762321  0 3.890648 POINT (408164.3 4762321)
-2 405914.9 4767394  1 4.899391              POINT EMPTY
-3 405724.0 4767706  2 4.434912              POINT EMPTY
-4 406702.8 4769201  3 5.285548              POINT EMPTY
-5 405392.3 4765598  4 5.295919              POINT EMPTY
-6 405644.1 4762037  5 4.681277              POINT EMPTY
-~~~
-{:.output}
-
-
-===
-
-The whole data frame must be cast to a simple feature object, which causes
-functions like `print` and `plot` to use methods introduced by the `sf` library.
-
-
-
-~~~r
-lead <- st_sf(lead)
-~~~
-{:title="{{ site.data.lesson.handouts[0] }}" .text-document}
-
-
-===
-
-For example, the `print` method automatically shows the CRS and truncates the
-number of records displayed.
-
-
-
-~~~r
-> lead
-~~~
-{:title="Console" .input}
-
-
-~~~
-Simple feature collection with 3149 features and 4 fields (with 3149 geometries empty)
-Geometry type: POINT
-Dimension:     XY
-Bounding box:  xmin: NA ymin: NA xmax: NA ymax: NA
-CRS:           EPSG:32618
-First 10 features:
-          x       y ID      ppm                 geometry
-1  408164.3 4762321  0 3.890648 POINT (408164.3 4762321)
-2  405914.9 4767394  1 4.899391              POINT EMPTY
-3  405724.0 4767706  2 4.434912              POINT EMPTY
-4  406702.8 4769201  3 5.285548              POINT EMPTY
-5  405392.3 4765598  4 5.295919              POINT EMPTY
-6  405644.1 4762037  5 4.681277              POINT EMPTY
-7  409183.1 4763057  6 3.364148              POINT EMPTY
-8  407945.4 4770014  7 4.096946              POINT EMPTY
-9  406341.4 4762603  8 4.689880              POINT EMPTY
-10 404638.1 4767636  9 5.422257              POINT EMPTY
-~~~
-{:.output}
-
-
-===
-
-Naturally, there is a shortcut to creating an `sf` object from a data frame with
-point coordinates. We use `st_as_sf()` with the `coords` argument to specify
-which columns represent the x and y coordinates of each point.
+We read in a data frame with point coordinates called `lead` from an external CSV file, 
+then create an `sf` object from the data frame. 
+We use `st_as_sf()` with the `coords` argument to specify
+which columns represent the `x` and `y` coordinates of each point.
 The CRS must be specified with the argument `crs` via EPSG integer or proj4 string.
 
 
 
 ~~~r
-lead <- read.csv('data/SYR_soil_PB.csv')
 lead <- st_as_sf(lead,
   coords = c('x', 'y'),
   crs = 32618)
 ~~~
 {:title="{{ site.data.lesson.handouts[0] }}" .text-document}
 
+
+===
+
+The `lead` data frame now has a "simple feature column" called `geometry`,
+which `st_as_sf` creates from a CRS and a geometry type. 
+
+Each element of the simple feature column is a simple feature geometry, here
+created from the `"x"` and `"y"` elements of a given feature.
+In this case, `st_as_sf` creates a point geometry because we supplied a 
+single `x` and `y` coordinate for each feature, but vector features
+can be points, lines, or polygons. 
+{:.notes}
 
 
 
@@ -200,7 +82,24 @@ First 10 features:
 
 ===
 
-Now that the data frame is an `sf` object, the data are easily displayed as a map.
+| geometry | description |
+|----------+-------------|
+| `st_point` | a single point |
+| `st_linestring` | sequence of points connected by straight, non-self-intersecting line pieces |
+| `st_polygon` | one [or more] sequences of points in a closed, non-self-intersecting ring [with holes] |
+| `st_multi*` | sequence of `*`, either `point`, `linestring`, or `polygon` |
+
+===
+
+Now that our data frame is a simple feature object, calling
+functions like `print` and `plot` will use methods introduced by the `sf` package.
+
+For example, the `print` method we just used automatically shows the CRS and truncates the
+number of records displayed.
+
+===
+
+Using the `plot` method, the data are easily displayed as a map.
 
 Here, the points are colored by lead concentration (`ppm`).
 {:.notes}
@@ -211,13 +110,13 @@ Here, the points are colored by lead concentration (`ppm`).
 plot(lead['ppm'])
 ~~~
 {:title="{{ site.data.lesson.handouts[0] }}" .text-document}
-![ ]({% include asset.html path="images/read/unnamed-chunk-9-1.png" %})
+![ ]({% include asset.html path="images/read/unnamed-chunk-4-1.png" %})
 {:.captioned}
 
 ===
 
 For [ggplot2]({:.rlib}) figures, use `geom_sf` to draw maps. In the `aes` mapping for feature collections, 
-the "x" and "y" variables are automatically assigned to the "geometry" column, 
+the `x` and `y` variables are automatically assigned to the `geometry` column, 
 while other attributes can be assigned to visual elements like `fill` or `color`.
 
 ===
@@ -232,7 +131,7 @@ ggplot(data = lead,
   geom_sf()
 ~~~
 {:title="{{ site.data.lesson.handouts[0] }}" .text-document}
-![ ]({% include asset.html path="images/read/unnamed-chunk-10-1.png" %})
+![ ]({% include asset.html path="images/read/unnamed-chunk-5-1.png" %})
 {:.captioned}
 
 ===
@@ -250,14 +149,27 @@ in the city of Syracuse from a shapefile.
 
 
 ~~~r
-blockgroups <- read_sf('data/bg_00')
+blockgroups <- st_read('data/bg_00')
 ~~~
 {:title="{{ site.data.lesson.handouts[0] }}" .text-document}
+
+
+~~~
+Reading layer `bg_00' from data source `/nfs/public-data/training/bg_00' using driver `ESRI Shapefile'
+Simple feature collection with 147 features and 3 fields
+Geometry type: POLYGON
+Dimension:     XY
+Bounding box:  xmin: 401938.3 ymin: 4759734 xmax: 412486.4 ymax: 4771049
+CRS:           32618
+~~~
+{:.output}
 
 
 ===
 
 The `geometry` column contains projected UTM coordinates of the polygon vertices.
+
+Also note the table dimensions show that there are 147 features in the collection.
 
 
 
@@ -273,38 +185,18 @@ Geometry type: POLYGON
 Dimension:     XY
 Bounding box:  xmin: 401938.3 ymin: 4759734 xmax: 412486.4 ymax: 4771049
 CRS:           32618
-# A tibble: 147 x 4
-   BKG_KEY   Shape_Leng Shape_Area                                      geometry
-   <chr>          <dbl>      <dbl>                                 <POLYGON [m]>
- 1 36067000…     13520.   6135184. ((403476.4 4767682, 403356.7 4767804, 403117…
- 2 36067000…      2547.    301840. ((406271.7 4770188, 406186.1 4770270, 406107…
- 3 36067000…      2678.    250998. ((406730.3 4770235, 406687.8 4770205, 406650…
- 4 36067000…      3392.    656276. ((406436.1 4770029, 406340 4769973, 406307.2…
- 5 36067000…      2224.    301086. ((407469 4770033, 407363.9 4770035, 407233.4…
- 6 36067000…      3263.    606495. ((408398.6 4769564, 408283.1 4769556, 408181…
- 7 36067000…      2878.    274532. ((407477.4 4769773, 407401 4769767, 407320.2…
- 8 36067000…      3606.    331035. ((407486 4769507, 407443.5 4769504, 407405.6…
- 9 36067001…      2951.    376786. ((410704.4 4769103, 410625.2 4769100, 410542…
-10 36067001…      2868.    265836. ((409318.3 4769203, 409299.6 4769535, 409231…
-# … with 137 more rows
-~~~
-{:.output}
-
-
-===
-
-Also note the table dimensions show that there are 147 features in the collection.
-
-
-
-~~~r
-> dim(blockgroups)
-~~~
-{:title="Console" .input}
-
-
-~~~
-[1] 147   4
+First 10 features:
+        BKG_KEY Shape_Leng Shape_Area                       geometry
+1  360670001001  13520.233  6135183.6 POLYGON ((403476.4 4767682,...
+2  360670003002   2547.130   301840.0 POLYGON ((406271.7 4770188,...
+3  360670003001   2678.046   250998.4 POLYGON ((406730.3 4770235,...
+4  360670002001   3391.920   656275.6 POLYGON ((406436.1 4770029,...
+5  360670004004   2224.179   301085.7 POLYGON ((407469 4770033, 4...
+6  360670004001   3263.257   606494.9 POLYGON ((408398.6 4769564,...
+7  360670004003   2878.404   274532.3 POLYGON ((407477.4 4769773,...
+8  360670004002   3605.653   331034.9 POLYGON ((407486 4769507, 4...
+9  360670010001   2950.688   376786.4 POLYGON ((410704.4 4769103,...
+10 360670010003   2868.260   265835.7 POLYGON ((409318.3 4769203,...
 ~~~
 {:.output}
 
@@ -322,7 +214,7 @@ Simple feature collections are data frames.
 
 
 ~~~
-[1] "sf"         "tbl_df"     "tbl"        "data.frame"
+[1] "sf"         "data.frame"
 ~~~
 {:.output}
 
@@ -331,8 +223,8 @@ Simple feature collections are data frames.
 
 The `blockgroups` object is a `data.frame`, but it also has the class attribute
 of `sf`. This additional class extends the `data.frame` class in ways useful for
-feature collection. For instance, the geometry column becomes "sticky" in most
-table operations, like subsetting. This means that the geometry column is retained
+feature collection. For instance, the `geometry` column becomes "sticky" in most
+table operations, like subsetting. This means that the `geometry` column is retained
 even if it is not explicitly named.
 {:.notes}
 
@@ -350,14 +242,12 @@ Geometry type: POLYGON
 Dimension:     XY
 Bounding box:  xmin: 402304.2 ymin: 4767421 xmax: 407469 ymax: 4771049
 CRS:           32618
-# A tibble: 5 x 2
-  BKG_KEY                                                               geometry
-  <chr>                                                            <POLYGON [m]>
-1 3606700010… ((403476.4 4767682, 403356.7 4767804, 403117.2 4768027, 402892.7 …
-2 3606700030… ((406271.7 4770188, 406186.1 4770270, 406107.9 4770345, 406079.9 …
-3 3606700030… ((406730.3 4770235, 406687.8 4770205, 406650.9 4770179, 406601 47…
-4 3606700020… ((406436.1 4770029, 406340 4769973, 406307.2 4769954, 406206.5 47…
-5 3606700040… ((407469 4770033, 407363.9 4770035, 407233.4 4770036, 407235.1 47…
+       BKG_KEY                       geometry
+1 360670001001 POLYGON ((403476.4 4767682,...
+2 360670003002 POLYGON ((406271.7 4770188,...
+3 360670003001 POLYGON ((406730.3 4770235,...
+4 360670002001 POLYGON ((406436.1 4770029,...
+5 360670004004 POLYGON ((407469 4770033, 4...
 ~~~
 {:.output}
 
@@ -384,7 +274,7 @@ data wrangling operations:
 +   geom_sf()
 ~~~
 {:title="Console" .input}
-![ ]({% include asset.html path="images/read/unnamed-chunk-16-1.png" %})
+![ ]({% include asset.html path="images/read/unnamed-chunk-10-1.png" %})
 {:.captioned}
 
 ===
@@ -395,10 +285,39 @@ columns found in both tables.
 
 
 ~~~r
+library(dplyr)
+~~~
+{:title="{{ site.data.lesson.handouts[0] }}" .text-document}
+
+
+~~~
+
+Attaching package: 'dplyr'
+~~~
+{:.output}
+
+
+~~~
+The following objects are masked from 'package:stats':
+
+    filter, lag
+~~~
+{:.output}
+
+
+~~~
+The following objects are masked from 'package:base':
+
+    intersect, setdiff, setequal, union
+~~~
+{:.output}
+
+
+~~~r
 census <- read.csv('data/SYR_census.csv')
-census <- within(census, {
-     BKG_KEY <- as.character(BKG_KEY)
-})
+census <- mutate(census, 
+     BKG_KEY = as.character(BKG_KEY)
+)
 ~~~
 {:title="{{ site.data.lesson.handouts[0] }}" .text-document}
 
@@ -406,14 +325,14 @@ census <- within(census, {
 Here, we read in a data frame called `census` with demographic characteristics
 of the Syracuse block groups.
 As usual, there's the difficulty that CSV files do not include metadata on data
-types, which have to be set manually. We do this here by coercing the `BKG_KEY`
-column to character format using `as.character()`.
+types, which have to be set manually. We do this here by changing the `BKG_KEY`
+column to character type using `as.character()`.
 {:.notes}
 
 ===
 
-Merge tables on a unique identifier (our primary key is "BKG_KEY"), but let the
-"sf" object come first or its special attributes get lost.
+Merge tables on a unique identifier (our primary key is `"BKG_KEY"`), but let the
+`sf` object come first or its special attributes get lost.
 
 The `inner_join()` function from [dplyr](){:.rlib} joins two data frames on a
 common key specified with the `by` argument, keeping only the rows from each data 
@@ -423,8 +342,6 @@ frame with matching keys in the other data frame and discarding the rest.
 
 
 ~~~r
-library(dplyr)
-
 census_blockgroups <- inner_join(
   blockgroups, census,
   by = c('BKG_KEY'))
@@ -441,7 +358,7 @@ census_blockgroups <- inner_join(
 
 
 ~~~
-[1] "sf"         "tbl_df"     "tbl"        "data.frame"
+[1] "sf"         "data.frame"
 ~~~
 {:.output}
 
@@ -458,7 +375,7 @@ ggplot(census_blockgroups,
   geom_sf()
 ~~~
 {:title="{{ site.data.lesson.handouts[0] }}" .text-document}
-![ ]({% include asset.html path="images/read/unnamed-chunk-20-1.png" %})
+![ ]({% include asset.html path="images/read/unnamed-chunk-14-1.png" %})
 {:.captioned}
 
 ===
@@ -499,7 +416,23 @@ boundaries were dissolved as expected.
 
 
 ~~~r
-tracts <- read_sf('data/ct_00')
+tracts <- st_read('data/ct_00')
+~~~
+{:title="{{ site.data.lesson.handouts[0] }}" .text-document}
+
+
+~~~
+Reading layer `ct_00' from data source `/nfs/public-data/training/ct_00' using driver `ESRI Shapefile'
+Simple feature collection with 57 features and 7 fields
+Geometry type: POLYGON
+Dimension:     XY
+Bounding box:  xmin: 401938.3 ymin: 4759734 xmax: 412486.4 ymax: 4771049
+CRS:           32618
+~~~
+{:.output}
+
+
+~~~r
 ggplot(census_tracts,
        aes(fill = POP2000)) +
   geom_sf() +
@@ -507,7 +440,7 @@ ggplot(census_tracts,
           color = 'red', fill = NA)
 ~~~
 {:title="{{ site.data.lesson.handouts[0] }}" .text-document}
-![ ]({% include asset.html path="images/read/unnamed-chunk-22-1.png" %})
+![ ]({% include asset.html path="images/read/unnamed-chunk-16-1.png" %})
 {:.captioned}
 
 ===

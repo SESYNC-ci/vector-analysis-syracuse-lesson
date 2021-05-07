@@ -57,7 +57,7 @@ in the data, so we can use it for interpolation.
 ~~~r
 v_ppm_fit <- fit.variogram(
   v_ppm,
-  model = vgm(1, "Sph", 900, 1))
+  model = vgm(model = "Sph", psill = 1, range = 900, nugget = 1))
 plot(v_ppm, v_ppm_fit)
 ~~~
 {:title="{{ site.data.lesson.handouts[0] }}" .text-document}
@@ -66,8 +66,12 @@ plot(v_ppm, v_ppm_fit)
 
 We use `fit.variogram()` to fit a model to our empirical variogram `v_ppm`. The type of 
 model is specified with the argument `model = vgm(...)`.
-Describing the parameters of `vgm()` used to fit the model variogram is outside the scope of this
-lesson; for more information check out [gstat documentation](https://cran.r-project.org/web/packages/gstat/index.html) 
+The parameters of `vgm()`, which we use to fit the variogram,
+are the `model` type, here `"Sph"` for spherical meaning equal trends in all directions,
+the `psill` or height of the plateau where the variance flattens out, the `range` or distance 
+until reaching the plateau, and the `nugget` or intercept.
+A more detailed description is outside the scope of this
+lesson; for more information check out the [gstat documentation](https://cran.r-project.org/web/packages/gstat/index.html) 
 and the references cited there.
 {:.notes}
 
@@ -95,19 +99,18 @@ Remember, the goal is aggregating lead concentrations within each census tract.
 pred_ppm <- st_make_grid(
   lead, cellsize = 400,
   what = 'centers')
-idx <- unlist(
-  st_intersects(census_tracts, pred_ppm))
-pred_ppm <- pred_ppm[idx]
+pred_ppm <- pred_ppm[census_tracts]
 ~~~
 {:title="{{ site.data.lesson.handouts[0] }}" .text-document}
 
 
-Here, `st_make_grid()` creates a grid of points `pred_ppm` at the center of 400-meter squares over the
+Here, `st_make_grid()` creates a grid of points, `pred_ppm`, at the center of 400-meter squares over the
 extent of the `lead` geometry. We can specify `cellsize = 400` because the CRS of `lead` is
 in units of meters, and `what = 'centers'` means we want the points at the center of each
-grid cell rather than polygons representing the cells. Next, we find only the points contained
-within census tract polygons using `st_intersects(census_tracts, pred_ppm)`, then `unlist()`
-to return a vector of indices `idx` for the points we want. Finally we subset `pred_ppm` by `idx`.
+grid cell. Next, we find only the points contained
+within census tract polygons using the shorthand `pred_ppm[census_tracts]`. This is shorthand for
+using `st_intersects()` to find which grid points are contained within the polygons, then subsetting the 
+grid points accordingly.
 {:.notes}
 
 ===
@@ -207,7 +210,8 @@ deviations that correct for autocorrelation.
 ~~~r
 ggplot(census_lead_tracts,
        aes(x = pred_ppm, y = avg_ppm)) +
-  geom_point()
+  geom_point() +
+  geom_abline(slope = 1)
 ~~~
 {:title="{{ site.data.lesson.handouts[0] }}" .text-document}
 ![ ]({% include asset.html path="images/smooth/unnamed-chunk-9-1.png" %})
@@ -220,7 +224,7 @@ The effect of paying attention to autocorrelation is subtle, but it is noticeabl
 
 
 ~~~r
-> census_lead_tracts[52,]
+> census_lead_tracts %>% filter(TRACT == 5800)
 ~~~
 {:title="Console" .input}
 
@@ -233,7 +237,7 @@ Bounding box:  xmin: 405633.1 ymin: 4762867 xmax: 406445.9 ymax: 4764711
 CRS:           32618
 # A tibble: 1 x 6
   TRACT POP2000 perc_hispa                             geometry avg_ppm pred_ppm
-  <int>   <int>      <dbl>                        <POLYGON [m]>   <dbl>    <dbl>
+* <int>   <int>      <dbl>                        <POLYGON [m]>   <dbl>    <dbl>
 1  5800    2715     0.0302 ((406445.9 4762893, 406017.5 476286…    5.44     5.53
 ~~~
 {:.output}

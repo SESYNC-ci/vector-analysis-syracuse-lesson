@@ -77,7 +77,7 @@ lead_tracts <- lead %>%
 
 ===
 
-Two more steps are needed to `group_by()` the data by "TRACT" and `summarise()` to average the lead concentrations within each "TRACT".
+Two more steps are needed: `group_by()` the data by `TRACT` and `summarise()` to average the lead concentrations within each `TRACT`.
 
 ```{r, handout = 0 }
 lead_tracts <- lead %>%
@@ -125,6 +125,7 @@ mapview(lead['ppm'],
         map.types = 'OpenStreetMap',
         viewer.suppress = TRUE) +
   mapview(census_tracts,
+          label = census_tracts$TRACT,
           legend = FALSE)
 ```
 

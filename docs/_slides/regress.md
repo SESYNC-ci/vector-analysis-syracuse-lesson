@@ -116,8 +116,8 @@ tracts_weight <- nb2listw(tracts_nb)
 
 
 By default, `nb2listw()` weights each neighbor of a polygon equally, although other
-weighting options are available. For example, you could weight a pair of neighbors more
-highly if their centroids are closer together.
+weighting options are available. For example, you could give a link between a pair
+of neighbors a higher weight if their centroids are closer together.
 {:.notes}
 
 ===

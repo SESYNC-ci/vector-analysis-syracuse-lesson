@@ -12,7 +12,7 @@ vector data in R.
 
 - [sf](){:.rlib}
   - `st_sf`: make a simple features data frame
-  - `read_sf`: read a file into a simple features data frame
+  - `st_read`: read a file into a simple features data frame
   - `st_join`: match tables on their geometry columns
 - [gstat](){:.rlib}
   - `variogram`: distance lagged correlation for points
