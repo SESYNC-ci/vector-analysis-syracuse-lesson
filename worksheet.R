@@ -232,3 +232,7 @@ moran.plot(
   tracts_weight,
   labels = census_lead_tracts[['TRACT']],
   pch = 19)
+
+census_lead_tracts <- census_lead_tracts %>%
+  mutate(...)
+plot(census_lead_tracts['sar.resid'])
