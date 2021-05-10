@@ -10,6 +10,16 @@ model requires making good assumptions about relationships in your data:
 - between *columns* as independent and dependent variables
 - between *rows* as more-or-less independent observations
 
+Here we examine spatial autocorrelation in the soil lead data and 
+perform a spatial regression between lead and
+percentage of Hispanic population. We visually examine spatial
+autocorrelation with a Moran's I plot and fit a spatial autoregressive
+model to correct for the clustering effect where soil samples closer
+together in space tend to have similar lead concentrations.
+But first, let's see what would happen if we completely ignore
+spatial autocorrelation and fit a simple linear model.
+{:.notes}
+
 ===
 
 The following model assumes an association (in the linear least-squares sense),

@@ -10,7 +10,11 @@ vector data and do data analysis on them to uncover spatial patterns.
 
 The example dataset in this lesson is a set of measurements of soil lead levels in the 
 city of Syracuse, New York, collected as part of a study investigating the relationship
-between background lead levels in the environment and lead levels in children's blood.
+between background lead levels in the environment and lead levels in children's blood. 
+As a geospatial analyst and EPA consultant for the city of Syracuse,
+your task is to investigate the relationship between metal concentration (in
+particular lead) and population. In particular, research suggests higher
+concentration of metals in minorities.
 {:.notes}
 
 ===

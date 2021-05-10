@@ -1,7 +1,14 @@
 ---
 ---
-    
+
 ## The Semivariogram
+
+To correct for the bias introduced by uneven sampling of soil lead
+concentrations across space, we will generate a gridded layer (surface) from lead
+point measurements and aggregate the gridded values at the census tract level.
+To generate the surface, you will need to fit a variogram model to the
+sample lead measurements. 
+{:.notes}
 
 A semivariogram quantifies the effect of distance on the correlation between
 values from different locations. *On average*, measurements of the same variable
@@ -107,7 +114,8 @@ pred_ppm <- pred_ppm[census_tracts]
 Here, `st_make_grid()` creates a grid of points, `pred_ppm`, at the center of 400-meter squares over the
 extent of the `lead` geometry. We can specify `cellsize = 400` because the CRS of `lead` is
 in units of meters, and `what = 'centers'` means we want the points at the center of each
-grid cell. Next, we find only the points contained
+grid cell. The grid spatial resolution is derived from the extent of the region and the
+application (coarser or finer depending on the use). Next, we find only the points contained
 within census tract polygons using the shorthand `pred_ppm[census_tracts]`. This is shorthand for
 using `st_intersects()` to find which grid points are contained within the polygons, then subsetting the 
 grid points accordingly.

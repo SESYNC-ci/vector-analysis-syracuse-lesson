@@ -7,6 +7,14 @@ output:
 
 ## Simple Features
 
+In this section, we will perform multiple operations to explore the datasets,
+including soil lead concentration data (points) and census data (polygons 
+representing [block groups][blockgroups] and [census tracts][tracts]).
+We will manipulate the datasets provided to join information using common table keys,
+spatially aggregate the block group data to the census tract level,
+and visualize vector spatial data with `plot` and `ggplot` commands for [sf](){:.rlib} objects.
+{:.notes}
+
 A standardized set of geometric shapes are the essence of vector data. 
 The [sf](){:.rlib} package puts sets of shapes in a tabular structure so that we can manipulate and analyze them.
 
@@ -98,7 +106,7 @@ More complicated geometries are usually not stored in CSV files, but they are
 usually still read as tabular data. We will see that the similarity of feature
 collections to non-spatial tabular data goes quite far; the usual data
 manipulations done on tabular data work just as well on `sf` objects. 
-Here, we read the boundaries of the [Census block groups](https://www.census.gov/programs-surveys/geography/about/glossary.html#par_textimage_4)
+Here, we read the boundaries of the [Census block groups][blockgroups]
 in the city of Syracuse from a shapefile.
 {:.notes}
 
@@ -227,7 +235,7 @@ census_tracts <- census_blockgroups %>%
 ```
 
 Here, we use the [dplyr](){:.rlib} function `group_by` to specify that we are doing an operation
-on all block groups within a [Census tract](https://www.census.gov/programs-surveys/geography/about/glossary.html#par_textimage_13).
+on all block groups within a [Census tract][tracts].
 We can use `summarise()` to calculate as many summary statistics as we want, each one separated by a comma.
 Here `POP2000` is the sum of all block group populations in each tract and `perc_hispa` is the sum of the Hispanic 
 population divided by the total population (because now we have redefined `POP2000` to be the population total). 
@@ -253,3 +261,6 @@ ggplot(census_tracts,
 By default, the sticky geometries are summarized with `st_union`. The
 alternative `st_combine` does not dissolve internal boundaries. Check
 `?summarise.sf` for more details.
+
+[blockgroups]: https://www.census.gov/programs-surveys/geography/about/glossary.html#par_textimage_4
+[tracts]: https://www.census.gov/programs-surveys/geography/about/glossary.html#par_textimage_13

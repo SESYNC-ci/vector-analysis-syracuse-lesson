@@ -3,6 +3,10 @@
 
 ## Spatial Join
 
+To summarize average lead concentration by census tracts, we need to spatially
+join the lead data with the census tract boundaries.
+{:.notes}
+
 The data about lead contamination in soils is at points; the census information
 is for polygons. Combine the information from these tables by determining which
 polygon contains each point.
@@ -184,7 +188,7 @@ is the wrong way around. Stick with the default.
 ===
 
 The population data is at the coarser scale, so the lead concentration ought to be averaged
-within a census tract. Once each lead measurement is joined to "TRACT", the
+within a census tract. Once each lead measurement is joined to `TRACT`, the
 spatial data can be dropped using `st_drop_geometry()`.
 
 
@@ -215,7 +219,8 @@ lead_tracts <- lead %>%
 
 ===
 
-To visualize the average lead concentration from soil samples within each census tract, merge the data frame to the `sf` object on "TRACT".
+To visualize the average lead concentration from soil samples within each census tract, 
+merge the data frame to the `sf` object on the `TRACT` column.
 
 Again, we use `inner_join` to keep all rows with matching keys between `census_tracts` and `lead_tracts`.
 {:.notes}
