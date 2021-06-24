@@ -223,23 +223,6 @@ moran.plot(
 
 ===
 
-For further confirmation, we can plot the spatial distribution of the residuals 
-of the SAR model. Overall, residuals are lower and have less spatial structure 
-compared to the original linear model.
-
-
-
-~~~r
-census_lead_tracts <- census_lead_tracts %>%
-  mutate(sar.resid = resid(ppm.sarlm))
-plot(census_lead_tracts['sar.resid'])
-~~~
-{:title="{{ site.data.lesson.handouts[0] }}" .text-document}
-![ ]({% include asset.html path="images/regress/unnamed-chunk-10-1.png" %})
-{:.captioned}
-
-===
-
 Feeling more confident in the model, we can now take a look at the regression
 coefficients and overall model fit.
 
