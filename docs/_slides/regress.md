@@ -94,7 +94,8 @@ to an [sp](){:.rlib} object using `as(st_geometry(...), 'Spatial')`.
 
 ===
 
-The `neighbors` variable is the network of features sharing a boundary point.
+The `tracts_nb` object is of class `nb` and contains the network of features sharing a boundary,
+even if they only touch at a single point.
 
 
 

@@ -148,7 +148,8 @@ census_lead_tracts <-
 
 ggplot(...,
        aes(x = ..., y = ...)) +
-  geom_point()
+  geom_point() +
+  geom_abline(...)
 
 # PART IV : SPATIAL AUTOCORRELATION AND REGRESSION 
 
