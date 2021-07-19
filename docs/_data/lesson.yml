@@ -22,7 +22,7 @@ handouts:
   - data/bk_00.dbf
   - data/bk_00.prj
   - data/README.md
-tag: v0.1
+tag: v0.2
 lesson: 7
 instructor: Quentin Read
 lifecycle: stable # status for lifecycle badge
